@@ -1,10 +1,10 @@
 class TweetsController < ApplicationController
   require 'tweetstream'
   TweetStream.configure do |config|
-    config.consumer_key       = ENV[CONFIG.CONSUMER_KEY]
-    config.consumer_secret    = ENV[CONFIG.CONSUMER_SECRET]
-    config.oauth_token        = ENV[CONFIG.OAUTH_TOKEN]
-    config.oauth_token_secret = ENV[CONFIG.AUTH_TOKEN_SECRET]
+    config.consumer_key       = ENV['CONSUMER_KEY']
+    config.consumer_secret    = ENV['CONSUMER_SECRET']
+    config.oauth_token        = ENV['OAUTH_TOKEN']
+    config.oauth_token_secret = ENV['OAUTH_TOKEN_SECRET']
     config.auth_method        = :oauth
   end
 
@@ -13,10 +13,12 @@ class TweetsController < ApplicationController
   end
 
   def index
-    TweetStream::Client.new.locations('-122.75,36.8,-121.75,37.8') do |status|
-      puts "#{status.text}"
-      puts status.to_hash
-      binding.pry
+    stream = TweetStream::Client.new
+    stream.filter({track: 'winning'}) do |status|
+      if status.geo.coordinates
+        puts "#{status.text}"
+        puts status.geo.coordinates
+      end
     end
   end
 end
