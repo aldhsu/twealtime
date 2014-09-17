@@ -9,12 +9,6 @@ class WebsocketController < WebsocketRails::BaseController
   # end
 
   # config insta
-  Instagram.configure do |config|
-    config.client_id = ENV['CLIENT_ID']
-    config.client_secret = ENV['CLIENT_SECRET']
-      # For secured endpoints only
-    #config.client_ips = '<Comma separated list of IPs>'
-  end
 
   def new
     # puts data
@@ -22,9 +16,10 @@ class WebsocketController < WebsocketRails::BaseController
 
   def test
     puts 'test'
-    session[:access_token] = Instagram.get_access_token(session[:instagram_code],redirect_uri: "http://c709747.ngrok.com/tweets").access_token
+    #change  to take redirect url
     Thread.new do |t|
-      Instagram.create_subscription('tag', "http://c709747.ngrok.com/tweets/listen",'media', {object_id: 'cats'})
+      # change to take callbackurl
+      Instagram.create_subscription('tag', "http://c709747.ngrok.com/events/listen",'media', {object_id: 'cats'})
       t.exit
     end
   end

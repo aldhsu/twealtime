@@ -3,5 +3,5 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
-  REDIRECT_URL = "http://c709747.ngrok.com/tweets"
+  REDIRECT_URL = "http://localhost:3000/events"
 end

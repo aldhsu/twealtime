@@ -1,8 +1,9 @@
 Rails.application.routes.draw do
-  get '/tweets/listen' => 'sessions#insta_sub'
-  post '/tweets/listen' => 'tweets#listen'
+  get '/events/data_insta' => 'events#get_data_insta'
+  get '/events/listen' => 'sessions#insta_sub'
+  post '/events/listen' => 'events#listen'
   root to: 'sessions#new'
-  resources :tweets
+  resources :events
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
