@@ -30,6 +30,7 @@ gem 'spring',        group: :development
 gem 'instagram'
 gem 'haml-rails'
 gem 'websocket-rails'
+gem 'httparty'
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
 

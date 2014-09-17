@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get '/tweets/listen' => 'sessions#insta_sub'
+  post '/tweets/listen' => 'tweets#listen'
+  root to: 'sessions#new'
   resources :tweets
 
   # The priority is based upon order of creation: first created -> highest priority.

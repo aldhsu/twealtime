@@ -7,6 +7,8 @@ class WebsocketController < WebsocketRails::BaseController
   #   config.oauth_token_secret = ENV['OAUTH_TOKEN_SECRET']
   #   config.auth_method        = :oauth
   # end
+
+  # config insta
   Instagram.configure do |config|
     config.client_id = ENV['CLIENT_ID']
     config.client_secret = ENV['CLIENT_SECRET']
@@ -14,9 +16,20 @@ class WebsocketController < WebsocketRails::BaseController
     #config.client_ips = '<Comma separated list of IPs>'
   end
 
+  def new
+    # puts data
+  end
+
   def test
     puts 'test'
-    stream
+    session[:access_token] = Instagram.get_access_token(session[:instagram_code],redirect_uri: "http://c709747.ngrok.com/tweets").access_token
+    Thread.new do |t|
+      Instagram.create_subscription('tag', "http://c709747.ngrok.com/tweets/listen",'media', {object_id: 'cats'})
+      t.exit
+    end
+  end
+
+  def listener
   end
 
   def stream
@@ -30,6 +43,5 @@ class WebsocketController < WebsocketRails::BaseController
     #     puts status.geo.coordinates, status.place, status.location
     #   end
     # end
-
   end
 end
