@@ -4,9 +4,9 @@
 * Slightly misnamed app that visualises Instagram geolocs for a tag over a globe
 
 === USES:
-[Modified Chrome Experiments](http://www.chromeexperiments.com/globe)
+* [Modified Chrome Experiments](http://www.chromeexperiments.com/globe)
 * instagram gem
 
 === TODO
 * Currently only searching 'cats' tag - need to put update for tag search
-* Convert to realtime APIs
+* Convert to realtime APIs - tried to do it with websockets
