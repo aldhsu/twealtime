@@ -1,7 +1,7 @@
 == README
 
 === Twealtime
-* Slightly misnamed app that visualises Instagram geolocs for a tag over a globe
+* Slightly misnamed app that visualises Instagram geolocs for a tag over a map of the world
 
 === USES:
 * [Modified Chrome Experiments](http://www.chromeexperiments.com/globe)
