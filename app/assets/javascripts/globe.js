@@ -11,9 +11,13 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
+/** Modifications
+
+*/
+
 var DAT = DAT || {};
 // future tag potentially
-DAT.dataStream = []
+DAT.dataStream = [['cat',[]]]
 
 DAT.Globe = function(container, opts) {
   opts = opts || {};
@@ -110,11 +114,11 @@ DAT.Globe = function(container, opts) {
 
     material = new THREE.ShaderMaterial({
 
-          uniforms: uniforms,
-          vertexShader: shader.vertexShader,
-          fragmentShader: shader.fragmentShader
+      uniforms: uniforms,
+      vertexShader: shader.vertexShader,
+      fragmentShader: shader.fragmentShader
 
-        });
+    });
 
     mesh = new THREE.Mesh(geometry, material);
     mesh.rotation.y = Math.PI;
@@ -125,14 +129,14 @@ DAT.Globe = function(container, opts) {
 
     material = new THREE.ShaderMaterial({
 
-          uniforms: uniforms,
-          vertexShader: shader.vertexShader,
-          fragmentShader: shader.fragmentShader,
-          side: THREE.BackSide,
-          blending: THREE.AdditiveBlending,
-          transparent: true
+      uniforms: uniforms,
+      vertexShader: shader.vertexShader,
+      fragmentShader: shader.fragmentShader,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true
 
-        });
+    });
 
     mesh = new THREE.Mesh(geometry, material);
     mesh.scale.set( 1.1, 1.1, 1.1 );
@@ -167,16 +171,15 @@ DAT.Globe = function(container, opts) {
     }, false);
   }
 
-  addData = function(data, opts) {
+  var addData = function(data, opts) {
     var lat, lng, size, color, i, step, colorFnWrapper;
 
     opts.animated = opts.animated || false;
     this.is_animated = opts.animated;
     opts.format = opts.format || 'magnitude'; // other option is 'legend'
-    console.log(opts.format);
     if (opts.format === 'magnitude') {
       step = 3;
-      colorFnWrapper = function(data, i) { return colorFn(data[i+2]); }
+      colorFnWrapper = function(data, i) { return colorFn(i*.005); }
     } else if (opts.format === 'legend') {
       step = 4;
       colorFnWrapper = function(data, i) { return colorFn(data[i+3]); }
@@ -184,19 +187,23 @@ DAT.Globe = function(container, opts) {
       throw('error: format not supported: '+opts.format);
     }
 
-    if (opts.animated) {
-      if (this._baseGeometry === undefined) {
-        this._baseGeometry = new THREE.Geometry();
-        for (i = 0; i < data.length; i += step) {
-          lat = data[i];
-          lng = data[i + 1];
-//        size = data[i + 2];
-          color = colorFnWrapper(data,i);
-          size = 0;
-          addPoint(lat, lng, size, color, this._baseGeometry);
-        }
+    function buildGeo(geo) {
+      for (i = 0; i < data.length; i += step) {
+        lat = data[i];
+        lng = data[i + 1];
+      //  size = data[i + 2];
+        color = colorFnWrapper(data,i);
+        size = 0;
+        addPoint(lat, lng, size, color, geo);
+        if (i == (data.length - 3)) autoMove(lat, lng);
       }
-      console.log(this._baseGeometry)
+    }
+
+    if (opts.animated) {
+      // create geometry based on data, uses step to move to next point
+      this._baseGeometry = new THREE.Geometry();
+      buildGeo(this._baseGeometry);
+
       if(this._morphTargetId === undefined) {
         this._morphTargetId = 0;
       } else {
@@ -214,7 +221,13 @@ DAT.Globe = function(container, opts) {
       addPoint(lat, lng, size, color, subgeo);
     }
     if (opts.animated) {
-      this._baseGeometry.morphTargets.push({'name': opts.name, vertices: subgeo.vertices});
+      if (this._baseGeometry.morphTargets.length > 0) {
+        // console.log (this._baseGeometry.morphTargets);
+        this._baseGeometry.morphTargets[0].vertices.concat(subgeo);
+        console.log(this._baseGeometry.morphTargets[0].vertices.length);
+      } else {
+        this._baseGeometry.morphTargets.push({'name': opts.name, vertices: subgeo.vertices});
+      }
     } else {
       this._baseGeometry = subgeo;
     }
@@ -230,7 +243,7 @@ DAT.Globe = function(container, opts) {
               morphTargets: false
             }));
       } else {
-        if (this._baseGeometry.morphTargets.length < 8) {
+        if (this._baseGeometry.morphTargets.length < 0) {
           console.log('t l',this._baseGeometry.morphTargets.length);
           var padding = 8-this._baseGeometry.morphTargets.length;
           console.log('padding', padding);
@@ -240,15 +253,16 @@ DAT.Globe = function(container, opts) {
           }
         }
         this.points = new THREE.Mesh(this._baseGeometry, new THREE.MeshBasicMaterial({
-              color: 0xffffff,
-              vertexColors: THREE.FaceColors,
-              morphTargets: true
-            }));
+          color: 0xffffff,
+          vertexColors: THREE.FaceColors,
+          morphTargets: true
+        }));
       }
       scene.add(this.points);
     }
   }
 
+  // create normal from globe
   function addPoint(lat, lng, size, color, subgeo) {
 
     var phi = (90 - lat) * Math.PI / 180;
@@ -271,6 +285,7 @@ DAT.Globe = function(container, opts) {
 
     THREE.GeometryUtils.merge(subgeo, point);
   }
+  // camera control
 
   function onMouseDown(event) {
     event.preventDefault();
@@ -287,7 +302,7 @@ DAT.Globe = function(container, opts) {
 
     container.style.cursor = 'move';
   }
-
+  // wtf
   function onMouseMove(event) {
     mouse.x = - event.clientX;
     mouse.y = event.clientY;
@@ -351,6 +366,13 @@ DAT.Globe = function(container, opts) {
     requestAnimationFrame(animate);
     render();
   }
+  function autoMove(lat, lng) {
+    console.log('automoving');
+    var phi = (90 - lat) * (Math.PI / 180);
+    var theta = (lng + 180) * (Math.PI / 180);
+    target.x = phi;
+    target.y = theta;
+  }
 
   function render() {
     zoom(curZoomSpeed);
@@ -404,7 +426,12 @@ DAT.Globe = function(container, opts) {
   this.createPoints = createPoints;
   this.renderer = renderer;
   this.scene = scene;
+  this.onWindowResize = onWindowResize;
 
+  // camera functions
+  this.cameraGet = function() {
+    return camera;
+  }
   return this;
 
 };
