@@ -4,7 +4,7 @@
 * Slightly misnamed app that visualises Instagram geolocs for a tag over a map of the world
 
 === USES:
-* [Modified Chrome Experiments](http://www.chromeexperiments.com/globe)
+* [Modified Chrome Experiments Globe](http://www.chromeexperiments.com/globe)
 * instagram gem
 
 === TODO
