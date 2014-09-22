@@ -367,7 +367,7 @@ DAT.Globe = function(container, opts) {
     render();
   }
   function autoMove(lat, lng) {
-    console.log('automoving');
+    console.log('automoving', lat ,lng);
     var phi = (90 - lat) * (Math.PI / 180);
     var theta = (lng + 180) * (Math.PI / 180);
     target.x = phi;

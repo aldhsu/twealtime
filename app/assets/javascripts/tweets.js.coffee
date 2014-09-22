@@ -9,5 +9,4 @@ $(document).ready(->
   dispatcher.bind('message', (data)->
     console.log(data);
   )
-
 )

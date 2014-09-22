@@ -3,14 +3,19 @@ $(document).ready(function() {
       Detector.addGetWebGLMessage();
     } else {
       // setup listener for search
-      var tag = $('#search-field').val() || 'cat'
+      $('#search-submit').on('click', function(event) {
+        event.preventDefault();
+        var tag = $('#search-field').val() || 'cat'
+      })
 
       // setup view
       var container = document.getElementById('container');
+
       var globe = new DAT.Globe(container);
       globe.onWindowResize();
       var i, tweens = [];
 
+      // tweening for animation
       var settime = function(globe, t) {
         return function() {
           new TWEEN.Tween(globe).to({time: t/3},500).easing(TWEEN.Easing.Cubic.EaseOut).start();
@@ -26,8 +31,8 @@ $(document).ready(function() {
       }
 
       var magnitude = .1;
+
       var getInstaData = function() {
-      console.log('getting');
         $.ajax({
           url: '/events/data_insta',
           method: 'get',
@@ -50,6 +55,7 @@ $(document).ready(function() {
           }
         })
       }
+      // initial get and begin
       getInstaData();
       globe.animate();
       setInterval(getInstaData, 5000)

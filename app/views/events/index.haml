@@ -1,2 +1,5 @@
 %div#container{data_uri: "#{request.host}:#{request.port}/websocket"}
 %h1 Welcome to Twealtime
+%form
+  %input{ type: 'text', placeholder: "Search Tag", id: "search-field"}
+  %input{ type: 'submit', id: "search-submit"}
